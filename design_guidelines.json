@@ -1,0 +1,140 @@
+{
+  "identity": {
+    "persona": "E1: The Anti-AI Designer",
+    "philosophy": "Fusion over Imitation. Emotion First. Content is King. Zoom in. Negative Space. Contrast.",
+    "anti_patterns": [
+      "Purple/Teal for CTA",
+      "Inter everywhere (use Manrope for headings)",
+      "Center-Everything Disease",
+      "Gradient Overload",
+      "Generic 'Bootstrap' columns"
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "heading": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "heading": "font-semibold or font-bold",
+      "body": "font-normal",
+      "label": "font-medium"
+    },
+    "sizes": {
+      "h1": "text-4xl md:text-5xl tracking-tight",
+      "h2": "text-3xl tracking-tight",
+      "h3": "text-2xl tracking-tight",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm text-muted-foreground",
+      "tiny": "text-xs uppercase tracking-wider"
+    }
+  },
+  "colors": {
+    "theme": "dark",
+    "palette": {
+      "background": {
+        "default": "#09090b",
+        "card": "#18181b",
+        "subtle": "#27272a"
+      },
+      "foreground": {
+        "default": "#fafafa",
+        "muted": "#a1a1aa",
+        "inverse": "#09090b"
+      },
+      "primary": {
+        "default": "#fafafa",
+        "foreground": "#18181b"
+      },
+      "accent": {
+        "default": "#22c55e",
+        "foreground": "#ffffff",
+        "subtle": "#14532d"
+      },
+      "status": {
+        "ready": "#22c55e",
+        "qr": "#f59e0b",
+        "disconnected": "#ef4444",
+        "init": "#3b82f6",
+        "auth": "#3b82f6"
+      },
+      "border": {
+        "default": "#27272a",
+        "active": "#3f3f46"
+      }
+    }
+  },
+  "layout": {
+    "grid": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6",
+      "card_internal": "flex flex-col gap-4"
+    },
+    "spacing": {
+      "container_padding": "p-6 md:p-8 lg:p-12",
+      "card_padding": "p-6",
+      "section_gap": "gap-8"
+    },
+    "containers": {
+      "card": "rounded-xl border border-border bg-card text-card-foreground shadow-sm hover:border-accent/50 transition-colors duration-300",
+      "modal": "rounded-xl border border-border bg-background shadow-2xl"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 rounded-md font-medium transition-all",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 rounded-md font-medium transition-all",
+      "ghost": "hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 rounded-md font-medium transition-all",
+      "destructive": "bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2 rounded-md font-medium transition-all",
+      "icon": "h-10 w-10 p-0 rounded-md flex items-center justify-center hover:bg-accent/10"
+    },
+    "inputs": {
+      "default": "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    },
+    "badges": {
+      "base": "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+      "ready": "border-transparent bg-green-500/15 text-green-500 hover:bg-green-500/25",
+      "qr": "border-transparent bg-amber-500/15 text-amber-500 hover:bg-amber-500/25",
+      "disconnected": "border-transparent bg-red-500/15 text-red-500 hover:bg-red-500/25",
+      "init": "border-transparent bg-blue-500/15 text-blue-500 hover:bg-blue-500/25"
+    },
+    "cards": {
+      "account": "relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow transition-all hover:shadow-md"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-background/80 border-b border-border/50",
+    "shadows": {
+      "subtle": "shadow-sm",
+      "medium": "shadow-md",
+      "glow": "shadow-[0_0_15px_rgba(34,197,94,0.15)]"
+    },
+    "borders": {
+      "subtle": "border border-border",
+      "highlight": "border border-accent/50"
+    }
+  },
+  "assets": {
+    "icons": "Use Lucide React icons. Import from 'lucide-react'. Examples: QrCode, RefreshCw, Trash2, Plus, ExternalLink, Smartphone, AlertCircle, CheckCircle2.",
+    "images": "No stock photos. Use placeholders for snapshots if data is missing: bg-muted/20 flex items-center justify-center text-muted-foreground."
+  },
+  "universal_guidelines": {
+    "general": [
+      "Dark mode first. Light mode optional but secondary.",
+      "No gradients for backgrounds. Use solid colors or subtle noise textures.",
+      "Use 2-3x more spacing than typical designs.",
+      "Every interaction needs micro-animations (hover, focus, active).",
+      "Use 'sonner' for toasts.",
+      "All interactive elements MUST include 'data-testid'.",
+      "Do not use 'transition: all'. Specify properties.",
+      "Do not center align the app container.",
+      "Use named exports for components, default exports for pages."
+    ],
+    "accessibility": [
+      "Ensure contrast ratios meet APCA standards.",
+      "Interactive elements must have visible focus states.",
+      "Use aria-labels for icon-only buttons."
+    ]
+  },
+  "instructions_to_main_agent": "Implement the dashboard using the provided guidelines. Focus on the 'Account Card' component as the core unit. Ensure the 'Add Account' flow is smooth (modal). The 'Snapshot Viewer' should be a modal with a dark backdrop. Use the 'Manrope' font for headings (import from Google Fonts or similar if not available, otherwise fallback to system sans-serif but styled boldly). STRICTLY follow the color palette. Do not invent new colors."
+}
