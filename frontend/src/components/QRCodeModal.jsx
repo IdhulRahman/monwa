@@ -24,14 +24,20 @@ export const QRCodeModal = ({ open, onClose, qrCode, accountName }) => {
         </DialogHeader>
         <div className="py-6">
           <div className="flex flex-col items-center gap-6">
-            <div className="p-4 bg-white rounded-xl shadow-lg">
-              <img
-                src={qrCode}
-                alt="QR Code"
-                className="w-64 h-64"
-                data-testid="qr-code-image"
-              />
-            </div>
+            {qrCode ? (
+              <div className="p-4 bg-white rounded-xl shadow-lg">
+                <img
+                  src={qrCode}
+                  alt="QR Code"
+                  className="w-64 h-64"
+                  data-testid="qr-code-image"
+                />
+              </div>
+            ) : (
+              <div className="w-72 h-72 bg-muted/20 rounded-xl flex items-center justify-center">
+                <span className="text-muted-foreground">Loading QR code...</span>
+              </div>
+            )}
             <div className="flex items-start gap-3 text-sm text-muted-foreground max-w-md">
               <Smartphone className="w-5 h-5 mt-0.5 flex-shrink-0 text-accent" />
               <div>
