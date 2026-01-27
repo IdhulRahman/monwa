@@ -141,28 +141,16 @@ export const AccountCard = ({ account, onDelete, onUpdateWebhook, onConnect }) =
 
           <div className="flex gap-2">
             {account.status === "QR" && account.qr_code && (
-              <>
-                <Button
-                  data-testid={`show-qr-${account.id}`}
-                  variant="secondary"
-                  size="sm"
-                  className="flex-1 font-medium"
-                  onClick={() => setShowQR(true)}
-                >
-                  <QrCodeIcon className="w-4 h-4 mr-2" />
-                  Show QR
-                </Button>
-                <Button
-                  data-testid={`simulate-connect-${account.id}`}
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 font-medium border-accent text-accent hover:bg-accent hover:text-white"
-                  onClick={() => onConnect(account.id)}
-                >
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Connect
-                </Button>
-              </>
+              <Button
+                data-testid={`show-qr-${account.id}`}
+                variant="secondary"
+                size="sm"
+                className="flex-1 font-medium"
+                onClick={() => setShowQR(true)}
+              >
+                <QrCodeIcon className="w-4 h-4 mr-2" />
+                Show QR
+              </Button>
             )}
             {account.status === "READY" && (
               <Button
