@@ -1,2 +1,3 @@
-2026/01/27-04:16:10.222 6ad Creating DB /app/backend/whatsapp-sessions/session-c7749f27-020a-483d-b571-a2ebee355fe6/Default/Extension State since it was missing.
-2026/01/27-04:16:10.242 6ad Reusing MANIFEST /app/backend/whatsapp-sessions/session-c7749f27-020a-483d-b571-a2ebee355fe6/Default/Extension State/MANIFEST-000001
+2026/01/27-04:17:51.679 912 Reusing MANIFEST /app/backend/whatsapp-sessions/session-c7749f27-020a-483d-b571-a2ebee355fe6/Default/Extension State/MANIFEST-000001
+2026/01/27-04:17:51.679 912 Recovering log #3
+2026/01/27-04:17:51.680 912 Reusing old log /app/backend/whatsapp-sessions/session-c7749f27-020a-483d-b571-a2ebee355fe6/Default/Extension State/000003.log 
