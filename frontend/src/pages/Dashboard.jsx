@@ -73,17 +73,6 @@ export const Dashboard = () => {
     }
   };
 
-  const handleConnect = async (accountId) => {
-    try {
-      await axios.post(`${API}/accounts/${accountId}/connect`);
-      toast.success("Account connected successfully");
-      fetchAccounts();
-    } catch (error) {
-      console.error("Error connecting account:", error);
-      toast.error("Failed to connect account");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#09090b] dark">
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50">
