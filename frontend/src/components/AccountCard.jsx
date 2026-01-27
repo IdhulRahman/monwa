@@ -36,7 +36,7 @@ const STATUS_CONFIG = {
   },
 };
 
-export const AccountCard = ({ account, onDelete, onUpdateWebhook, onConnect }) => {
+export const AccountCard = ({ account, onDelete, onUpdateWebhook }) => {
   const [showQR, setShowQR] = useState(false);
   const [showSnapshot, setShowSnapshot] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);

@@ -139,7 +139,6 @@ export const Dashboard = () => {
                 account={account}
                 onDelete={handleDeleteAccount}
                 onUpdateWebhook={handleUpdateWebhook}
-                onConnect={handleConnect}
               />
             ))}
           </div>
