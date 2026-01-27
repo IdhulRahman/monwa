@@ -1,2 +1,3 @@
-2026/01/27-04:34:07.246 cb3 Creating DB /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Session Storage since it was missing.
-2026/01/27-04:34:07.269 cb3 Reusing MANIFEST /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Session Storage/MANIFEST-000001
+2026/01/27-05:36:24.532 2a9 Reusing MANIFEST /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Session Storage/MANIFEST-000001
+2026/01/27-05:36:24.540 2a9 Recovering log #3
+2026/01/27-05:36:24.542 2a9 Reusing old log /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Session Storage/000003.log 

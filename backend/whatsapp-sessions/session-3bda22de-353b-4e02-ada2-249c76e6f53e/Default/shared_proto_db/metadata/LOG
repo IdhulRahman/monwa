@@ -1,3 +1,3 @@
-2026/01/27-05:35:57.873 121 Reusing MANIFEST /app/backend/whatsapp-sessions/session-3bda22de-353b-4e02-ada2-249c76e6f53e/Default/shared_proto_db/metadata/MANIFEST-000001
-2026/01/27-05:35:57.874 121 Recovering log #3
-2026/01/27-05:35:57.876 121 Reusing old log /app/backend/whatsapp-sessions/session-3bda22de-353b-4e02-ada2-249c76e6f53e/Default/shared_proto_db/metadata/000003.log 
+2026/01/27-05:39:17.313 48d Reusing MANIFEST /app/backend/whatsapp-sessions/session-3bda22de-353b-4e02-ada2-249c76e6f53e/Default/shared_proto_db/metadata/MANIFEST-000001
+2026/01/27-05:39:17.314 48d Recovering log #3
+2026/01/27-05:39:17.315 48d Reusing old log /app/backend/whatsapp-sessions/session-3bda22de-353b-4e02-ada2-249c76e6f53e/Default/shared_proto_db/metadata/000003.log 
