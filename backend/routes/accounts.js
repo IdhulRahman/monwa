@@ -36,6 +36,19 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'Account name is required' });
         }
         
+        const maxAccounts = parseInt(process.env.MAX_WHATSAPP_ACCOUNTS || '5', 10);
+        const activeClients = clientManager.getAllClients();
+        
+        if (activeClients.length >= maxAccounts) {
+            console.log(`[API] Account creation rejected: limit ${maxAccounts} reached`);
+            return res.status(429).json({ 
+                error: 'Maximum account limit reached',
+                error_code: 'MAX_ACCOUNT_LIMIT_REACHED',
+                current: activeClients.length,
+                max: maxAccounts
+            });
+        }
+        
         const accountId = randomUUID();
         const account = {
             id: accountId,
