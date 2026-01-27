@@ -1,0 +1,2 @@
+2026/01/27-04:21:17.569 bb1 Creating DB /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Sync Data/LevelDB since it was missing.
+2026/01/27-04:21:17.649 bb1 Reusing MANIFEST /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Sync Data/LevelDB/MANIFEST-000001
