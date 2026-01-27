@@ -178,12 +178,18 @@ router.get('/:id/snapshot', async (req, res) => {
             return res.status(400).json({ error: 'Account not ready' });
         }
         
+        console.log('[SNAPSHOT] using existing page');
+        
         const delayMs = Math.floor(2000 + Math.random() * 2000);
-        console.log(`[API] Applying ${delayMs}ms delay before snapshot capture`);
+        const delaySec = (delayMs / 1000).toFixed(1);
+        console.log(`[SNAPSHOT] delay applied: ${delaySec}s`);
         await new Promise(resolve => setTimeout(resolve, delayMs));
         
         const snapshot = await clientManager.captureSnapshot(req.params.id);
         const timestamp = new Date().toISOString();
+        
+        const sizeKB = Math.round(snapshot.length / 1024);
+        console.log(`[SNAPSHOT] size: ${sizeKB}kb`);
         
         const db = await getDb();
         await db.collection('whatsapp_accounts').updateOne(
