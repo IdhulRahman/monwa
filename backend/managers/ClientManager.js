@@ -84,6 +84,22 @@ class ClientManager {
         client.on('ready', async () => {
             console.log(`[ClientManager] Client ready for ${accountId}`);
             const info = client.info;
+            
+            console.log(`[RUNTIME PROOF] WhatsApp client ready:`, {
+                accountId,
+                hasPuppeteerBrowser: !!client.pupBrowser,
+                hasPuppeteerPage: !!client.pupPage,
+                browserConnected: client.pupBrowser ? client.pupBrowser.isConnected() : false,
+                browserPID: client.pupBrowser?.process()?.pid,
+                phoneNumber: info ? info.wid.user : null,
+                clientVersion: client.info?.wid._serialized
+            });
+            
+            if (client.pupPage) {
+                const pageURL = await client.pupPage.url();
+                console.log(`[RUNTIME PROOF] Page URL: ${pageURL}`);
+            }
+            
             this._updateAccountStatus(accountId, 'READY', {
                 phone_number: info ? info.wid.user : null,
                 qr_code: null,
@@ -171,13 +187,27 @@ class ClientManager {
             throw new Error('Client page not available');
         }
         
-        console.log(`[ClientManager] Capturing snapshot for ${accountId}`);
+        console.log(`[RUNTIME PROOF] Snapshot capture for ${accountId}:`, {
+            hasBrowser: !!client.pupBrowser,
+            hasPage: !!client.pupPage,
+            pageURL: client.pupPage ? await client.pupPage.url() : null,
+            browserPID: client.pupBrowser ? client.pupBrowser.process()?.pid : null,
+            timestamp: new Date().toISOString()
+        });
         
         try {
             const screenshot = await client.pupPage.screenshot({
                 type: 'png',
                 encoding: 'base64',
                 fullPage: false
+            });
+            
+            const screenshotSize = screenshot.length;
+            console.log(`[RUNTIME PROOF] Screenshot captured:`, {
+                sizeBytes: screenshotSize,
+                sizeKB: Math.round(screenshotSize / 1024),
+                isBase64: /^[A-Za-z0-9+/=]+$/.test(screenshot),
+                startsWithPNGHeader: screenshot.startsWith('iVBORw0KGgo')
             });
             
             return `data:image/png;base64,${screenshot}`;
