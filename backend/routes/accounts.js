@@ -151,6 +151,7 @@ router.put('/:id/webhook', async (req, res) => {
 /**
  * GET /api/accounts/:id/snapshot
  * Capture snapshot of WhatsApp page (reuses existing page)
+ * Includes configurable delay (2-4 seconds) for realistic capture
  */
 router.get('/:id/snapshot', async (req, res) => {
     try {
@@ -163,6 +164,10 @@ router.get('/:id/snapshot', async (req, res) => {
         if (!client.info) {
             return res.status(400).json({ error: 'Account not ready' });
         }
+        
+        const delayMs = Math.floor(2000 + Math.random() * 2000);
+        console.log(`[API] Applying ${delayMs}ms delay before snapshot capture`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
         
         const snapshot = await clientManager.captureSnapshot(req.params.id);
         const timestamp = new Date().toISOString();
