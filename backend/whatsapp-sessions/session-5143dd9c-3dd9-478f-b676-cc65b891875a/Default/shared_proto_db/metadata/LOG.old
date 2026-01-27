@@ -1,0 +1,2 @@
+2026/01/27-04:14:35.705 504 Creating DB /app/backend/whatsapp-sessions/session-5143dd9c-3dd9-478f-b676-cc65b891875a/Default/shared_proto_db/metadata since it was missing.
+2026/01/27-04:14:35.715 504 Reusing MANIFEST /app/backend/whatsapp-sessions/session-5143dd9c-3dd9-478f-b676-cc65b891875a/Default/shared_proto_db/metadata/MANIFEST-000001
