@@ -1,3 +1,2 @@
-2026/01/27-04:27:21.258 a0 Reusing MANIFEST /app/backend/whatsapp-sessions/session-5143dd9c-3dd9-478f-b676-cc65b891875a/Default/Site Characteristics Database/MANIFEST-000001
-2026/01/27-04:27:21.259 a0 Recovering log #3
-2026/01/27-04:27:21.262 a0 Reusing old log /app/backend/whatsapp-sessions/session-5143dd9c-3dd9-478f-b676-cc65b891875a/Default/Site Characteristics Database/000003.log 
+2026/01/27-04:29:00.025 3ee Creating DB /app/backend/whatsapp-sessions/session-5143dd9c-3dd9-478f-b676-cc65b891875a/Default/Site Characteristics Database since it was missing.
+2026/01/27-04:29:00.044 3ee Reusing MANIFEST /app/backend/whatsapp-sessions/session-5143dd9c-3dd9-478f-b676-cc65b891875a/Default/Site Characteristics Database/MANIFEST-000001
