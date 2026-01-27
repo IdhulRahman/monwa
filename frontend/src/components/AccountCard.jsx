@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, ExternalLink, Camera, QrCode as QrCodeIcon, CheckCircle2, Edit2, Save, X } from "lucide-react";
+import { Trash2, ExternalLink, Camera, QrCode as QrCodeIcon, Edit2, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
