@@ -1,2 +1,3 @@
-2026/01/27-04:15:16.990 5be Creating DB /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Sync Data/LevelDB since it was missing.
-2026/01/27-04:15:17.153 5be Reusing MANIFEST /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Sync Data/LevelDB/MANIFEST-000001
+2026/01/27-04:17:19.273 87e Reusing MANIFEST /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Sync Data/LevelDB/MANIFEST-000001
+2026/01/27-04:17:19.313 87e Recovering log #3
+2026/01/27-04:17:19.315 87e Reusing old log /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Sync Data/LevelDB/000003.log 
