@@ -1,2 +1,3 @@
-2026/01/27-04:29:18.121 483 Creating DB /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Service Worker/Database since it was missing.
-2026/01/27-04:29:18.128 483 Reusing MANIFEST /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Service Worker/Database/MANIFEST-000001
+2026/01/27-04:30:08.746 706 Reusing MANIFEST /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Service Worker/Database/MANIFEST-000001
+2026/01/27-04:30:08.749 706 Recovering log #3
+2026/01/27-04:30:08.749 706 Reusing old log /app/backend/whatsapp-sessions/session-78707962-205d-4a2d-af47-ae650856243e/Default/Service Worker/Database/000003.log 
