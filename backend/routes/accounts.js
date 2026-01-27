@@ -1,5 +1,5 @@
 const express = require('express');
-const { v4: uuidv4 } = require('crypto').randomUUID ? require('crypto') : { v4: () => require('crypto').randomBytes(16).toString('hex') };
+const { randomUUID } = require('crypto');
 const clientManager = require('../managers/ClientManager');
 const { getDb } = require('../db');
 
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'Account name is required' });
         }
         
-        const accountId = uuidv4();
+        const accountId = randomUUID();
         const account = {
             id: accountId,
             name,
