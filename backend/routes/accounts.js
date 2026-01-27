@@ -231,6 +231,113 @@ router.post('/:id/send', async (req, res) => {
 });
 
 /**
+ * POST /api/accounts/:id/messages/send
+ * Send message (text or media)
+ * ONLY works when account status === READY
+ */
+router.post('/:id/messages/send', async (req, res) => {
+    try {
+        const { to, message, media_url, media_type, caption } = req.body;
+        
+        if (!to) {
+            return res.status(400).json({ 
+                error: 'Recipient phone number required',
+                error_code: 'MISSING_RECIPIENT'
+            });
+        }
+        
+        const client = clientManager.getClient(req.params.id);
+        
+        if (!client) {
+            return res.status(404).json({ 
+                error: 'Account not found or not initialized',
+                error_code: 'ACCOUNT_NOT_FOUND'
+            });
+        }
+        
+        if (!client.info) {
+            return res.status(400).json({ 
+                error: 'Account not ready. Cannot send messages.',
+                error_code: 'ACCOUNT_NOT_READY'
+            });
+        }
+        
+        if (!message && !media_url) {
+            return res.status(400).json({ 
+                error: 'Either message text or media_url required',
+                error_code: 'MISSING_CONTENT'
+            });
+        }
+        
+        const chatId = to.includes('@') ? to : `${to}@c.us`;
+        
+        if (media_url) {
+            const axios = require('axios');
+            const { MessageMedia } = require('whatsapp-web.js');
+            
+            const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+            
+            try {
+                const response = await axios.get(media_url, { 
+                    responseType: 'arraybuffer',
+                    maxContentLength: 10 * 1024 * 1024,
+                    timeout: 30000
+                });
+                
+                const contentType = response.headers['content-type'];
+                
+                if (!allowedTypes.includes(contentType)) {
+                    return res.status(400).json({ 
+                        error: `Unsupported media type: ${contentType}`,
+                        error_code: 'INVALID_MEDIA_TYPE',
+                        allowed: allowedTypes
+                    });
+                }
+                
+                const base64Data = Buffer.from(response.data, 'binary').toString('base64');
+                const media = new MessageMedia(contentType, base64Data);
+                
+                await client.sendMessage(chatId, media, { caption: caption || '' });
+                
+                console.log(`[API] Media message sent from ${req.params.id} to ${to}`);
+                
+                return res.json({ 
+                    success: true, 
+                    message: 'Media message sent',
+                    to: chatId
+                });
+                
+            } catch (error) {
+                console.error('[API] Media fetch/send error:', error.message);
+                return res.status(500).json({ 
+                    error: 'Failed to fetch or send media',
+                    error_code: 'MEDIA_SEND_FAILED',
+                    details: error.message
+                });
+            }
+        } else {
+            await client.sendMessage(chatId, message);
+            
+            console.log(`[API] Text message sent from ${req.params.id} to ${to}`);
+            
+            return res.json({ 
+                success: true, 
+                message: 'Text message sent',
+                to: chatId
+            });
+        }
+        
+    } catch (error) {
+        console.error('[API] Error sending message:', error);
+        return res.status(500).json({ 
+            error: 'Failed to send message',
+            error_code: 'SEND_FAILED',
+            details: error.message
+        });
+    }
+});
+
+/**
  * DELETE /api/accounts/:id
  * Delete account and destroy session
  */

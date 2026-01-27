@@ -1,2 +1,3 @@
-2026/01/27-04:34:07.012 cb3 Creating DB /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Local Storage/leveldb since it was missing.
-2026/01/27-04:34:07.215 cb3 Reusing MANIFEST /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Local Storage/leveldb/MANIFEST-000001
+2026/01/27-05:36:23.927 2a9 Reusing MANIFEST /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Local Storage/leveldb/MANIFEST-000001
+2026/01/27-05:36:23.937 2a9 Recovering log #3
+2026/01/27-05:36:23.940 2a9 Reusing old log /app/backend/whatsapp-sessions/session-46b42e1e-e6ec-4a86-9c46-fedae28e9f32/Default/Local Storage/leveldb/000003.log 
