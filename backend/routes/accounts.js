@@ -36,19 +36,6 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: 'Account name is required' });
         }
         
-        const maxAccounts = parseInt(process.env.MAX_WHATSAPP_ACCOUNTS || '5', 10);
-        const activeClients = clientManager.getAllClients();
-        
-        if (activeClients.length >= maxAccounts) {
-            console.log(`[API] Account creation rejected: limit ${maxAccounts} reached`);
-            return res.status(429).json({ 
-                error: 'Maximum account limit reached',
-                error_code: 'MAX_ACCOUNT_LIMIT_REACHED',
-                current: activeClients.length,
-                max: maxAccounts
-            });
-        }
-        
         const accountId = randomUUID();
         const account = {
             id: accountId,
@@ -66,6 +53,20 @@ router.post('/', async (req, res) => {
         
         const db = await getDb();
         await db.collection('whatsapp_accounts').insertOne({ ...account });
+        
+        const maxAccounts = parseInt(process.env.MAX_WHATSAPP_ACCOUNTS || '5', 10);
+        const activeClients = clientManager.getAllClients();
+        
+        if (activeClients.length >= maxAccounts) {
+            console.log(`[API] Account initialization blocked: limit ${maxAccounts} reached`);
+            await db.collection('whatsapp_accounts').deleteOne({ id: accountId });
+            return res.status(429).json({ 
+                error: 'Maximum account limit reached',
+                error_code: 'MAX_ACCOUNT_LIMIT_REACHED',
+                current: activeClients.length,
+                max: maxAccounts
+            });
+        }
         
         clientManager.initializeClient(accountId, webhook_url).catch(error => {
             console.error(`[API] Failed to initialize client for ${accountId}:`, error);
