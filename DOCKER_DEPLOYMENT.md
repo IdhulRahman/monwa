@@ -1,37 +1,21 @@
 # Docker Deployment Guide
 
-This guide covers Docker-specific deployment for the WhatsApp Monitoring Platform.
+This guide covers Docker-specific deployment details for the WhatsApp Monitoring Platform.
 
-For general usage and API documentation, see [README.md](README.md).
+For general usage, API documentation, and troubleshooting, see [README.md](README.md).
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 | Requirement | Version | Check Command |
 |-------------|---------|---------------|
 | Docker | 20.x+ | `docker --version` |
 | Docker Compose | 2.x+ | `docker-compose --version` |
 
-**Install Docker (Ubuntu/Debian):**
-
-```bash
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# Add user to docker group
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Verify
-docker --version
-docker-compose --version
-```
-
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # 1. Clone repository
@@ -42,7 +26,7 @@ cd whatsapp-monitoring-platform
 cp .env.example .env
 
 # 3. Start services
-docker-compose up -d
+docker-compose up --build -d
 
 # 4. Verify
 curl http://localhost:8001/api
@@ -55,72 +39,59 @@ Expected response:
 
 ---
 
-## 📦 What Gets Deployed
+## What Gets Deployed
 
 ### Services
 
-**backend** (Node.js + whatsapp-web.js)
-- **Image:** Built from local Dockerfile
-- **Port:** 8001 (HTTP API)
-- **Restart:** Always (unless manually stopped)
-- **Dependencies:** MongoDB
-
-**mongodb** (MongoDB 7)
-- **Image:** mongo:7 (official)
-- **Port:** 27017 (internal only, not exposed to host)
-- **Restart:** Always (unless manually stopped)
+| Service | Image | Port | Purpose |
+|---------|-------|------|---------|
+| `backend` | Built locally | 8001 | Node.js API + WhatsApp clients |
+| `mongodb` | mongo:7 | 27017 (internal) | Account metadata storage |
 
 ### Volumes
 
-**whatsapp-sessions**
-- **Purpose:** Stores WhatsApp authentication sessions
-- **Location:** Docker managed volume
-- **Persistence:** Survives container restarts and rebuilds
-
-**mongodb-data**
-- **Purpose:** Stores database files
-- **Location:** Docker managed volume
-- **Persistence:** Survives container restarts and rebuilds
+| Volume | Mount Path | Purpose |
+|--------|------------|---------|
+| `whatsapp-sessions` | `/app/backend/whatsapp-sessions` | WhatsApp authentication sessions |
+| `mongodb-data` | `/data/db` | MongoDB database files |
 
 ---
 
-## ⚙️ Configuration
+## Volume Persistence
 
-### Environment Variables
+WhatsApp sessions are stored in the `whatsapp-sessions` Docker volume.
 
-Edit `.env` file before starting:
+### What's Stored
 
-```env
-# MongoDB (use service name in Docker)
-MONGO_URL=mongodb://mongodb:27017
-DB_NAME=whatsapp_monitor
+- Chrome profile data (cookies, local storage)
+- WhatsApp authentication tokens
+- Session metadata
 
-# Server
-CORS_ORIGINS=*
+### Persistence Behavior
 
-# Limits
-MAX_WHATSAPP_ACCOUNTS=5
+| Action | Sessions Preserved | QR Re-scan Required |
+|--------|-------------------|---------------------|
+| `docker-compose restart` | ✅ Yes | ❌ No |
+| `docker-compose stop` then `up` | ✅ Yes | ❌ No |
+| `docker-compose down` | ✅ Yes | ❌ No |
+| `docker-compose down -v` | ❌ No | ✅ Yes |
+| `docker-compose up --build` | ✅ Yes | ❌ No |
+| Host machine reboot | ✅ Yes | ❌ No |
 
-# Environment
-NODE_ENV=production
-```
-
-**Important:**
-- Use `mongodb://mongodb:27017` (service name) NOT `localhost`
-- Changing `MAX_WHATSAPP_ACCOUNTS` requires restart: `docker-compose restart backend`
+⚠️ **Warning:** `docker-compose down -v` deletes ALL volumes including sessions and database.
 
 ---
 
-### Port Configuration
+## Port Configuration
 
-Default ports:
+Default port mapping:
 
-| Service | Internal | External | Description |
-|---------|----------|----------|-------------|
-| Backend | 8001 | 8001 | API server |
-| MongoDB | 27017 | (not exposed) | Database |
+| Service | Container Port | Host Port |
+|---------|---------------|-----------|
+| Backend | 8001 | 8001 |
+| MongoDB | 27017 | 27017 |
 
-**Change external port:**
+### Changing the Backend Port
 
 Edit `docker-compose.yml`:
 
@@ -131,54 +102,23 @@ services:
       - "9000:8001"  # Host:Container
 ```
 
-Then access API at: http://localhost:9000/api
+Access API at: http://localhost:9000/api
 
 ---
 
-## 💾 Session Persistence
+## Common Operations
 
-### How It Works
-
-WhatsApp sessions are stored in Docker volume `whatsapp-sessions`.
-
-```yaml
-volumes:
-  - whatsapp-sessions:/app/backend/whatsapp-sessions
-```
-
-This volume contains:
-- Chrome profile data (cookies, local storage)
-- WhatsApp authentication tokens
-- Session metadata
-
-### Persistence Matrix
-
-| Action | Sessions Preserved? | QR Re-scan Required? |
-|--------|---------------------|---------------------|
-| `docker-compose restart` | ✅ Yes | ❌ No |
-| `docker-compose stop` + `up` | ✅ Yes | ❌ No |
-| `docker-compose down` | ✅ Yes | ❌ No |
-| `docker-compose down -v` | ❌ No | ✅ Yes |
-| `docker-compose up --build` | ✅ Yes | ❌ No |
-| Host machine reboot | ✅ Yes | ❌ No |
-
-**⚠️ Warning:** `docker-compose down -v` deletes ALL volumes including sessions.
-
----
-
-## 🔄 Common Operations
-
-### Start Services
+### Starting Services
 
 ```bash
+# Start in background
 docker-compose up -d
+
+# Start and rebuild images
+docker-compose up --build -d
 ```
 
-Flags:
-- `-d` : Detached mode (run in background)
-- `--build` : Force rebuild images
-
-### Stop Services
+### Stopping Services
 
 ```bash
 # Stop (preserves data)
@@ -188,17 +128,17 @@ docker-compose down
 docker-compose down -v
 ```
 
-### Restart Services
+### Restarting Services
 
 ```bash
-# Restart all
+# Restart all services
 docker-compose restart
 
 # Restart backend only
 docker-compose restart backend
 ```
 
-### View Logs
+### Viewing Logs
 
 ```bash
 # All services
@@ -211,7 +151,7 @@ docker-compose logs -f backend
 docker-compose logs --tail=100 backend
 ```
 
-### Check Status
+### Checking Status
 
 ```bash
 docker-compose ps
@@ -221,16 +161,16 @@ Expected output:
 ```
 NAME                      STATUS    PORTS
 whatsapp-monitor-backend  Up        0.0.0.0:8001->8001/tcp
-whatsapp-monitor-db       Up        27017/tcp
+whatsapp-monitor-db       Up        0.0.0.0:27017->27017/tcp
 ```
 
-### Execute Commands in Container
+### Executing Commands in Container
 
 ```bash
-# Backend shell
+# Open shell in backend container
 docker-compose exec backend sh
 
-# MongoDB shell
+# Open MongoDB shell
 docker-compose exec mongodb mongosh whatsapp_monitor
 
 # Check Chrome processes
@@ -239,7 +179,7 @@ docker-compose exec backend ps aux | grep chrome
 
 ---
 
-## 📤 Backup & Restore
+## Backup & Restore
 
 ### Backup Sessions
 
@@ -247,10 +187,10 @@ docker-compose exec backend ps aux | grep chrome
 docker run --rm \
   -v whatsapp-monitoring-platform_whatsapp-sessions:/data \
   -v $(pwd):/backup \
-  alpine tar czf /backup/whatsapp-sessions-backup.tar.gz -C /data .
+  alpine tar czf /backup/sessions-backup.tar.gz -C /data .
 ```
 
-Creates `whatsapp-sessions-backup.tar.gz` in current directory.
+Creates `sessions-backup.tar.gz` in current directory.
 
 ### Restore Sessions
 
@@ -258,11 +198,10 @@ Creates `whatsapp-sessions-backup.tar.gz` in current directory.
 docker run --rm \
   -v whatsapp-monitoring-platform_whatsapp-sessions:/data \
   -v $(pwd):/backup \
-  alpine tar xzf /backup/whatsapp-sessions-backup.tar.gz -C /data
+  alpine tar xzf /backup/sessions-backup.tar.gz -C /data
 ```
 
-Then restart backend:
-
+Then restart:
 ```bash
 docker-compose restart backend
 ```
@@ -270,10 +209,7 @@ docker-compose restart backend
 ### Backup Database
 
 ```bash
-docker-compose exec mongodb mongodump \
-  --out=/dump \
-  --db=whatsapp_monitor
-
+docker-compose exec mongodb mongodump --out=/dump --db=whatsapp_monitor
 docker cp whatsapp-monitor-db:/dump ./mongodb-backup
 ```
 
@@ -281,28 +217,24 @@ docker cp whatsapp-monitor-db:/dump ./mongodb-backup
 
 ```bash
 docker cp ./mongodb-backup whatsapp-monitor-db:/dump
-
-docker-compose exec mongodb mongorestore \
-  --db=whatsapp_monitor \
-  /dump/whatsapp_monitor
+docker-compose exec mongodb mongorestore --db=whatsapp_monitor /dump/whatsapp_monitor
 ```
 
 ---
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Container Won't Start
 
 **Check logs:**
-
 ```bash
 docker-compose logs backend
 ```
 
 **Common causes:**
-- Port 8001 already in use (change in docker-compose.yml)
-- MongoDB not ready (add healthcheck)
-- Missing .env file (copy from .env.example)
+- Port 8001 already in use → Change port in `docker-compose.yml`
+- Missing `.env` file → Copy from `.env.example`
+- MongoDB not ready → Wait and restart backend
 
 ---
 
@@ -311,9 +243,7 @@ docker-compose logs backend
 **Symptom:** Backend logs show Puppeteer errors.
 
 **Solution:**
-
 ```bash
-# Rebuild with no cache
 docker-compose down
 docker-compose build --no-cache backend
 docker-compose up -d
@@ -325,36 +255,28 @@ docker-compose up -d
 
 **Symptom:** Account requires QR re-scan after restart.
 
-**Check volume:**
-
+**Check volume exists:**
 ```bash
 docker volume ls | grep whatsapp-sessions
 ```
 
-If missing, volume was deleted. Create account again and scan QR.
-
 **Verify mount:**
-
 ```bash
 docker-compose exec backend ls -la /app/backend/whatsapp-sessions/
 ```
 
-Should show session directories.
+Should show session directories for each account.
 
 ---
 
 ### MongoDB Connection Failed
 
-**Symptom:** Backend can't connect to database.
-
 **Check MongoDB status:**
-
 ```bash
 docker-compose logs mongodb
 ```
 
-**Verify connection string in .env:**
-
+**Verify connection string in `.env`:**
 ```env
 MONGO_URL=mongodb://mongodb:27017
 ```
@@ -365,174 +287,88 @@ Must use `mongodb` (service name), not `localhost`.
 
 ### Out of Memory
 
-**Symptom:** Containers crash or freeze.
-
 **Check resource usage:**
-
 ```bash
 docker stats
 ```
 
-**Solution:**
+**Resource requirements:**
+- Each WhatsApp account uses ~200MB RAM
+- For 5 accounts: minimum 2GB RAM, recommended 4GB RAM
 
-Each WhatsApp account uses ~200MB RAM. For 5 accounts:
-
-- Minimum: 2GB RAM
-- Recommended: 4GB RAM
-
-Increase Docker memory limit:
+**Increase Docker memory:**
 - Docker Desktop → Settings → Resources → Memory
 
 ---
 
 ### Port Conflict
 
-**Symptom:** `docker-compose up` fails with "port already allocated".
-
-**Solution:**
-
+**Find process using port:**
 ```bash
-# Find process using port 8001
 sudo lsof -i :8001
-
-# Kill process or change port in docker-compose.yml
 ```
 
-Edit `docker-compose.yml`:
-
-```yaml
-ports:
-  - "9000:8001"
-```
+**Options:**
+1. Stop the conflicting process
+2. Change port in `docker-compose.yml`
 
 ---
 
-## 🔒 Production Deployment
+## Resource Limits (Optional)
 
-### Security Checklist
-
-Before deploying to production:
-
-- [ ] Change `CORS_ORIGINS` from `*` to specific domain
-- [ ] Add reverse proxy (Nginx/Caddy) with HTTPS
-- [ ] Set up MongoDB authentication
-- [ ] Enable Docker resource limits
-- [ ] Configure log rotation
-- [ ] Set up monitoring (Prometheus/Grafana)
-- [ ] Create automated backups
-- [ ] Document QR scan process for team
-
-### Example: Adding MongoDB Authentication
-
-**1. Create MongoDB user:**
-
-```bash
-docker-compose exec mongodb mongosh whatsapp_monitor
-
-# In MongoDB shell:
-db.createUser({
-  user: "admin",
-  pwd: "secure_password",
-  roles: [{ role: "readWrite", db: "whatsapp_monitor" }]
-})
-```
-
-**2. Update .env:**
-
-```env
-MONGO_URL=mongodb://admin:secure_password@mongodb:27017/whatsapp_monitor
-```
-
-**3. Restart backend:**
-
-```bash
-docker-compose restart backend
-```
-
-### Example: Adding Reverse Proxy
-
-**1. Create nginx.conf:**
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location /api {
-        proxy_pass http://localhost:8001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-**2. Add to docker-compose.yml:**
+Add to `docker-compose.yml`:
 
 ```yaml
 services:
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - backend
+  backend:
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
 ```
 
 ---
 
-## 📊 Monitoring
-
-### Health Checks
+## Log Rotation (Optional)
 
 Add to `docker-compose.yml`:
 
 ```yaml
-backend:
-  healthcheck:
-    test: ["CMD", "curl", "-f", "http://localhost:8001/api"]
-    interval: 30s
-    timeout: 10s
-    retries: 3
-    start_period: 40s
-```
-
-### Resource Limits
-
-Add to `docker-compose.yml`:
-
-```yaml
-backend:
-  deploy:
-    resources:
-      limits:
-        cpus: '2'
-        memory: 4G
-      reservations:
-        cpus: '1'
-        memory: 2G
-```
-
-### Log Rotation
-
-Add to `docker-compose.yml`:
-
-```yaml
-backend:
-  logging:
-    driver: "json-file"
-    options:
-      max-size: "10m"
-      max-file: "3"
+services:
+  backend:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 ```
 
 ---
 
-## 🗑️ Clean Restart
+## Health Checks (Optional)
 
-**⚠️ Warning:** This deletes ALL data including sessions and database.
+Add to `docker-compose.yml`:
+
+```yaml
+services:
+  backend:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+```
+
+---
+
+## Clean Restart
+
+⚠️ **Warning:** This deletes ALL data including sessions and database.
 
 ```bash
 docker-compose down -v
@@ -543,14 +379,8 @@ All accounts will need QR re-scan.
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **Main Documentation:** [README.md](README.md)
 - **Docker Documentation:** https://docs.docker.com
 - **Docker Compose Reference:** https://docs.docker.com/compose/compose-file
-
----
-
-**Last Updated:** January 27, 2026  
-**Docker Version:** 20.10+  
-**Compose Version:** 2.x
