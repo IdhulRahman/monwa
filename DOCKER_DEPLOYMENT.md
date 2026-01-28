@@ -89,6 +89,7 @@ Default configuration:
 
 | Service | Container Port | Host Port | ENV Variable |
 |---------|----------------|-----------|--------------|
+| Frontend | 3000 | 3000 | `FRONTEND_PORT` |
 | Backend | 8001 | 8001 | `BACKEND_PORT` |
 | MongoDB | 27017 | 27017 | `MONGO_PORT` |
 
