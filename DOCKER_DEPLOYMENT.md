@@ -98,6 +98,7 @@ Default configuration:
 Edit `.env`:
 
 ```env
+FRONTEND_PORT=4000
 BACKEND_PORT=9000
 MONGO_PORT=27018
 ```
@@ -109,6 +110,7 @@ docker-compose up -d
 ```
 
 Access at new ports:
+- Dashboard: http://localhost:4000
 - API: http://localhost:9000/api
 - MongoDB: localhost:27018
 
