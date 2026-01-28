@@ -205,41 +205,21 @@ Expected response:
 
 | Service | URL | Description |
 |---------|-----|-------------|
+| **Dashboard** | http://localhost:3000 | React UI |
 | **Backend API** | http://localhost:8001/api | REST API endpoints |
-| **Dashboard** | http://localhost:3000 | React UI (if running) |
 | **MongoDB** | localhost:27017 | Database (internal use) |
 
-### Access the Dashboard
-
-**Option A: Run frontend separately**
+### View Logs
 
 ```bash
-cd frontend
-yarn install
-yarn start
-```
+# All services
+docker-compose logs -f
 
-Dashboard opens at: http://localhost:3000
+# Frontend only
+docker-compose logs -f frontend
 
-**Option B: Build and serve frontend**
-
-```bash
-cd frontend
-yarn build
-# Serve the build/ folder with any static server
-```
-
-### Common Commands
-
-```bash
-# View logs
+# Backend only
 docker-compose logs -f backend
-
-# Stop services (keeps data)
-docker-compose down
-
-# Stop and delete all data
-docker-compose down -v
 ```
 
 For more Docker details, see [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md).
