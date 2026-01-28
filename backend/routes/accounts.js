@@ -180,7 +180,10 @@ router.get('/:id/snapshot', async (req, res) => {
         
         console.log('[SNAPSHOT] using existing page');
         
-        const delayMs = Math.floor(2000 + Math.random() * 2000);
+        // Configurable snapshot delay range (randomized for natural behavior)
+        const delayMin = parseInt(process.env.SNAPSHOT_DELAY_MIN || '2000', 10);
+        const delayMax = parseInt(process.env.SNAPSHOT_DELAY_MAX || '4000', 10);
+        const delayMs = Math.floor(delayMin + Math.random() * (delayMax - delayMin));
         const delaySec = (delayMs / 1000).toFixed(1);
         console.log(`[SNAPSHOT] delay applied: ${delaySec}s`);
         await new Promise(resolve => setTimeout(resolve, delayMs));
