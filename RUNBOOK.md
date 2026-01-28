@@ -130,13 +130,6 @@ docker-compose up -d
 
 ---
 
-## Access Points
-
-| Service | URL |
-|---------|-----|
-| Backend API | http://localhost:8001/api |
-| Dashboard | http://localhost:3000 |
-
 ---
 
 See [README.md](README.md) for full documentation.
