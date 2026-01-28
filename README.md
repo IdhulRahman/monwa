@@ -222,6 +222,20 @@ docker-compose logs -f frontend
 docker-compose logs -f backend
 ```
 
+### Common Commands
+
+```bash
+# Stop services (keeps data)
+docker-compose down
+
+# Stop and delete all data
+docker-compose down -v
+
+# Restart a service
+docker-compose restart frontend
+docker-compose restart backend
+```
+
 For more Docker details, see [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md).
 
 ---
