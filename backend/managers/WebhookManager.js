@@ -13,6 +13,8 @@ class WebhookManager {
         
         try {
             const payload = {
+                event: 'message',
+                direction: 'inbound',
                 account_id: accountId,
                 message_id: message.id.id,
                 from: message.from,
@@ -29,8 +31,11 @@ class WebhookManager {
             
             console.log(`[WebhookManager] Forwarding message from ${accountId} to ${webhookUrl}`);
             
+            // Configurable webhook timeout
+            const timeout = parseInt(process.env.WEBHOOK_TIMEOUT || '5000', 10);
+            
             await axios.post(webhookUrl, payload, {
-                timeout: 5000,
+                timeout: timeout,
                 headers: {
                     'Content-Type': 'application/json',
                     'User-Agent': 'WhatsApp-Monitor/1.0'
