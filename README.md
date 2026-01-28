@@ -1,4 +1,4 @@
-# WhatsApp Monitoring Platform
+# Monwa - WhatsApp Monitoring Platform
 
 A production-grade system for monitoring multiple WhatsApp accounts through a single dashboard.
 
