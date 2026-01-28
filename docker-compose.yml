@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: whatsapp-monitor-backend
+    container_name: monwa-backend
     env_file:
       - .env
     ports:
@@ -30,7 +30,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: whatsapp-monitor-frontend
+    container_name: monwa-frontend
     env_file:
       - .env
     ports:
@@ -45,7 +45,7 @@ services:
 
   mongodb:
     image: mongo:7
-    container_name: whatsapp-monitor-db
+    container_name: monwa-db
     ports:
       - "${MONGO_PORT:-27017}:27017"
     volumes:
