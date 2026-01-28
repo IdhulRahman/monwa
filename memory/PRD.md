@@ -35,7 +35,7 @@ Inspired by WAHA but designed for multi-account monitoring with a lighter footpr
 - [x] README.md with 10-section structure
 - [x] DOCKER_DEPLOYMENT.md
 - [x] RUNBOOK.md for operators
-- [x] .env.example and .env.example.txt
+- [x] .env.example
 
 ---
 
