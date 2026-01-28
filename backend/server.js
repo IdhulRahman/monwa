@@ -1,14 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+// Load environment from root .env (single global config)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const { getDb, closeDb } = require('./db');
 const clientManager = require('./managers/ClientManager');
 const accountsRouter = require('./routes/accounts');
 
 const app = express();
-const PORT = process.env.PORT || 8001;
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 8001;
 
 app.use(cors({
     origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : '*',
