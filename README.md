@@ -146,10 +146,10 @@ cd monwa
 cp .env.example .env
 ```
 
-Or copy from the visible text file:
+Or if `.env.example` doesn't show in your file browser, copy manually:
 
 ```bash
-cp .env.example.txt .env
+cat .env.example > .env
 ```
 
 **Step 3: Adjust settings (optional)**
