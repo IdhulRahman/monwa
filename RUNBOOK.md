@@ -4,17 +4,26 @@ Quick reference for operators and QA.
 
 ---
 
+## Access Points
+
+| Service | URL |
+|---------|-----|
+| Dashboard | http://localhost:3000 |
+| Backend API | http://localhost:8001/api |
+
+---
+
 ## Quick Start
 
 ```bash
-# Start
+# Start all services
 docker-compose up -d
 
 # Health check
 curl http://localhost:8001/api
 
-# Logs
-docker-compose logs -f backend
+# View logs
+docker-compose logs -f
 
 # Stop
 docker-compose down
