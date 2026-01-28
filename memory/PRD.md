@@ -1,4 +1,4 @@
-# WhatsApp Monitoring Platform - PRD
+# Monwa - WhatsApp Monitoring Platform PRD
 
 ## Original Problem Statement
 
