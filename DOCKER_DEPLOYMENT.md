@@ -46,7 +46,7 @@ Expected response:
 | Service | Image | Port | Purpose |
 |---------|-------|------|---------|
 | `backend` | Built locally | 8001 | Node.js API + WhatsApp clients |
-| `mongodb` | mongo:7 | 27017 (internal) | Account metadata storage |
+| `mongodb` | mongo:7 | 27017 | Account metadata storage |
 
 ### Volumes
 

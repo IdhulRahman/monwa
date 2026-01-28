@@ -307,6 +307,7 @@ Dashboard opens at: http://localhost:3000
 | `POST` | `/api/accounts` | Create new WhatsApp account |
 | `GET` | `/api/accounts` | List all accounts |
 | `GET` | `/api/accounts/{id}` | Get account details (includes QR code) |
+| `GET` | `/api/accounts/{id}/qr` | Get current QR code only |
 | `PUT` | `/api/accounts/{id}/webhook` | Update webhook URL |
 | `DELETE` | `/api/accounts/{id}` | Delete account and session |
 
