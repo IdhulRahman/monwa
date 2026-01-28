@@ -1,0 +1,18 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY frontend/package.json frontend/yarn.lock* ./
+
+# Install dependencies
+RUN yarn install --frozen-lockfile || yarn install
+
+# Copy frontend source
+COPY frontend/ .
+
+# Expose port
+EXPOSE 3000
+
+# Start development server
+CMD ["yarn", "start"]
