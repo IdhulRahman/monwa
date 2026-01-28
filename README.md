@@ -137,7 +137,7 @@ cp .env.example .env
 
 ```bash
 git clone <repository-url>
-cd whatsapp-monitoring-platform
+cd monwa
 ```
 
 **Step 2: Create environment file**

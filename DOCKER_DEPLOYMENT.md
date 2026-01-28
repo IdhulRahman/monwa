@@ -208,7 +208,7 @@ docker-compose ps
 
 ```bash
 docker run --rm \
-  -v whatsapp-monitoring-platform_whatsapp-sessions:/data \
+  -v monwa_whatsapp-sessions:/data \
   -v $(pwd):/backup \
   alpine tar czf /backup/sessions.tar.gz -C /data .
 ```
@@ -217,7 +217,7 @@ docker run --rm \
 
 ```bash
 docker run --rm \
-  -v whatsapp-monitoring-platform_whatsapp-sessions:/data \
+  -v monwa_whatsapp-sessions:/data \
   -v $(pwd):/backup \
   alpine tar xzf /backup/sessions.tar.gz -C /data
 
@@ -273,7 +273,7 @@ docker volume ls | grep whatsapp
 
 **Inspect volume:**
 ```bash
-docker volume inspect whatsapp-monitoring-platform_whatsapp-sessions
+docker volume inspect monwa_whatsapp-sessions
 ```
 
 ---
