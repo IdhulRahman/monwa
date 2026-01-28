@@ -183,10 +183,10 @@ docker-compose ps
 Expected output:
 
 ```
-NAME                        STATUS    PORTS
-whatsapp-monitor-backend    Up        0.0.0.0:8001->8001/tcp
-whatsapp-monitor-frontend   Up        0.0.0.0:3000->3000/tcp
-whatsapp-monitor-db         Up        0.0.0.0:27017->27017/tcp
+NAME              STATUS    PORTS
+monwa-backend     Up        0.0.0.0:8001->8001/tcp
+monwa-frontend    Up        0.0.0.0:3000->3000/tcp
+monwa-db          Up        0.0.0.0:27017->27017/tcp
 ```
 
 **Step 6: Test the API**
