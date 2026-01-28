@@ -1,6 +1,6 @@
-# Docker Deployment Guide
+# Monwa - Docker Deployment Guide
 
-Docker-specific instructions for the WhatsApp Monitoring Platform.
+Docker-specific instructions for Monwa (WhatsApp Monitoring Platform).
 
 For general usage, see [README.md](README.md).
 
