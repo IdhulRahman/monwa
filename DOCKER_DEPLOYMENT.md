@@ -27,13 +27,14 @@ All environment variables are passed to containers automatically.
     │
     ├── docker-compose.yml (reads .env)
     │       │
+    │       ├── frontend container
+    │       │   └── Uses: FRONTEND_PORT, REACT_APP_BACKEND_URL
+    │       │
     │       ├── backend container
     │       │   └── Uses: BACKEND_PORT, MONGO_URI, DB_NAME, etc.
     │       │
     │       └── mongodb container
     │           └── Uses: MONGO_PORT
-    │
-    └── frontend (reads same .env if needed)
 ```
 
 ---
