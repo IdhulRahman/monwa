@@ -6,14 +6,20 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: whatsapp-monitor-backend
+    env_file:
+      - .env
     ports:
-      - "8001:8001"
+      - "${BACKEND_PORT:-8001}:${BACKEND_PORT:-8001}"
     environment:
-      - MONGO_URL=mongodb://mongodb:27017
-      - DB_NAME=whatsapp_monitor
-      - CORS_ORIGINS=*
-      - MAX_WHATSAPP_ACCOUNTS=5
-      - NODE_ENV=production
+      - BACKEND_PORT=${BACKEND_PORT:-8001}
+      - MONGO_URI=mongodb://mongodb:${MONGO_PORT:-27017}
+      - DB_NAME=${DB_NAME:-whatsapp_monitor}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      - MAX_WHATSAPP_ACCOUNTS=${MAX_WHATSAPP_ACCOUNTS:-5}
+      - SNAPSHOT_DELAY_MIN=${SNAPSHOT_DELAY_MIN:-2000}
+      - SNAPSHOT_DELAY_MAX=${SNAPSHOT_DELAY_MAX:-4000}
+      - WEBHOOK_TIMEOUT=${WEBHOOK_TIMEOUT:-5000}
+      - NODE_ENV=${NODE_ENV:-production}
     volumes:
       - whatsapp-sessions:/app/backend/whatsapp-sessions
     depends_on:
@@ -24,7 +30,7 @@ services:
     image: mongo:7
     container_name: whatsapp-monitor-db
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT:-27017}:27017"
     volumes:
       - mongodb-data:/data/db
     restart: unless-stopped
