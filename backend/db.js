@@ -1,5 +1,8 @@
 const { MongoClient } = require('mongodb');
-require('dotenv').config();
+const path = require('path');
+
+// Load environment from root .env (single global config)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 let client = null;
 let db = null;
@@ -10,8 +13,9 @@ let db = null;
 async function getDb() {
     if (db) return db;
     
-    const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost:27017';
-    const dbName = process.env.DB_NAME || 'test_database';
+    // Support both MONGO_URI (new) and MONGO_URL (legacy) for compatibility
+    const mongoUrl = process.env.MONGO_URI || process.env.MONGO_URL || 'mongodb://localhost:27017';
+    const dbName = process.env.DB_NAME || 'whatsapp_monitor';
     
     console.log(`[DB] Connecting to MongoDB: ${mongoUrl}/${dbName}`);
     
