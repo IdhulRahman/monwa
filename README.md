@@ -1,10 +1,12 @@
 # WhatsApp Monitoring Platform
 
+A production-grade system for monitoring multiple WhatsApp accounts through a single dashboard.
+
+---
+
 ## 1. Project Overview
 
-This is a production-grade system for monitoring multiple WhatsApp accounts through a single dashboard.
-
-**What this system does:**
+This platform enables you to:
 - Connect and manage multiple WhatsApp accounts
 - Authenticate using QR codes (scan once, stays logged in)
 - Capture on-demand screenshots of WhatsApp Web
@@ -13,13 +15,12 @@ This is a production-grade system for monitoring multiple WhatsApp accounts thro
 
 **Core Philosophy:**
 - **Snapshot-based monitoring** — View WhatsApp state on demand, not continuous streaming
-- **Lightweight** — Reuses existing WhatsApp Web pages, no new browser tabs per action
-- **Multi-account** — Manage up to 5 accounts by default (configurable via environment variable)
-- **Session persistent** — Accounts stay logged in after server restarts (no QR re-scan)
+- **Lightweight** — Reuses existing browser pages, no new tabs per action
+- **Multi-account** — Manage multiple accounts (limit configurable)
+- **Session persistent** — Accounts stay logged in after server restarts
+- **Single configuration** — One `.env` file controls everything
 
-**Technology:**
-- WhatsApp Web integration via [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
-- Headless Chrome managed internally by Puppeteer
+Inspired by WAHA, but designed for multi-account monitoring with a lighter footprint.
 
 ---
 
@@ -27,12 +28,13 @@ This is a production-grade system for monitoring multiple WhatsApp accounts thro
 
 | Feature | Description |
 |---------|-------------|
-| **Multi-Account Support** | Manage multiple WhatsApp accounts (limit configurable via ENV) |
-| **Session Persistence** | Accounts stay logged in across restarts using LocalAuth |
-| **Snapshot Capture** | Take screenshots of WhatsApp Web interface on demand |
-| **Unified Webhooks** | Receive text and media messages in a single payload format |
-| **Send Message API** | Send text messages and media (images, PDFs) programmatically |
-| **Docker-Ready** | One-command deployment with docker-compose |
+| Multi-Account Support | Manage multiple WhatsApp accounts (ENV-limited) |
+| Session Persistence | LocalAuth keeps accounts logged in across restarts |
+| Snapshot Capture | On-demand screenshots of WhatsApp Web UI |
+| Unified Webhooks | Text + media messages in single payload format |
+| Send Message API | Send text, images, and PDFs programmatically |
+| Docker-Ready | One-command deployment with docker-compose |
+| Single Global ENV | All configuration in one `.env` file |
 
 ---
 
@@ -49,7 +51,8 @@ This is a production-grade system for monitoring multiple WhatsApp accounts thro
          ┌───────────────┐   ┌──────────────┐
          │  React UI     │   │   WhatsApp   │
          │  (Dashboard)  │   │   Mobile App │
-         └───────┬───────┘   └──────────────┘
+         │  Port 3000    │   └──────────────┘
+         └───────┬───────┘
                  │
                  │ API Calls
                  ↓
@@ -67,10 +70,9 @@ This is a production-grade system for monitoring multiple WhatsApp accounts thro
          │  (Puppeteer)     (LocalAuth)     │
          └────┬──────────────────┬──────────┘
               │                  │
-              │                  │ Persist
               ↓                  ↓
          MongoDB          Docker Volume
-      (Accounts DB)     (Session Files)
+      (Port 27017)      (Session Files)
 ```
 
 **Components:**
@@ -79,29 +81,46 @@ This is a production-grade system for monitoring multiple WhatsApp accounts thro
 |-----------|------------|---------|
 | Backend | Node.js + Express | REST API server |
 | WhatsApp Client | whatsapp-web.js | Connects to WhatsApp Web |
-| Browser | Puppeteer + Chrome | Renders WhatsApp Web (headless) |
-| Frontend | React + Tailwind CSS | Dashboard UI |
-| Database | MongoDB | Stores account metadata |
-| Sessions | LocalAuth | Saves login state to disk |
+| Browser | Puppeteer + Chrome | Renders WhatsApp (headless) |
+| Frontend | React + Tailwind | Dashboard UI |
+| Database | MongoDB | Account metadata storage |
+| Sessions | LocalAuth | Persists login state to disk |
+| Configuration | Single `.env` | Shared by all services |
 
 ---
 
 ## 4. Environment Variables
 
-All configuration is done via `.env` file.
+⚠️ **All configuration is controlled via ONE `.env` file in the repository root.**
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `MONGO_URL` | MongoDB connection string | `mongodb://mongodb:27017` | Yes |
-| `DB_NAME` | Database name | `whatsapp_monitor` | Yes |
-| `CORS_ORIGINS` | Allowed CORS origins (comma-separated) | `*` | No |
-| `MAX_WHATSAPP_ACCOUNTS` | Maximum number of accounts allowed | `5` | No |
-| `NODE_ENV` | Node.js environment | `production` | No |
+Copy `.env.example` to `.env` before starting:
 
-**Notes:**
-- For Docker: use `mongodb://mongodb:27017` (service name)
-- For local development: use `mongodb://localhost:27017`
-- Changing `MAX_WHATSAPP_ACCOUNTS` requires a server restart to take effect
+```bash
+cp .env.example .env
+```
+
+### Full Variable Reference
+
+| Variable | Description | Default | Required | Affects |
+|----------|-------------|---------|----------|---------|
+| `BACKEND_PORT` | Backend API port | `8001` | Yes | Backend, Docker |
+| `FRONTEND_PORT` | Dashboard UI port | `3000` | Yes | Frontend, Docker |
+| `MONGO_PORT` | MongoDB port | `27017` | Yes | Database, Docker |
+| `MONGO_URI` | MongoDB connection string | `mongodb://mongodb:27017` | Yes | Backend |
+| `DB_NAME` | Database name | `whatsapp_monitor` | Yes | Backend |
+| `MAX_WHATSAPP_ACCOUNTS` | Maximum accounts allowed | `5` | No | Backend |
+| `SNAPSHOT_DELAY_MIN` | Min snapshot delay (ms) | `2000` | No | Backend |
+| `SNAPSHOT_DELAY_MAX` | Max snapshot delay (ms) | `4000` | No | Backend |
+| `WEBHOOK_TIMEOUT` | Webhook HTTP timeout (ms) | `5000` | No | Backend |
+| `CORS_ORIGINS` | Allowed CORS origins | `*` | No | Backend |
+| `NODE_ENV` | Environment mode | `production` | No | Backend |
+
+### Notes
+
+- **For Docker:** Use `MONGO_URI=mongodb://mongodb:27017` (service name)
+- **For Local:** Use `MONGO_URI=mongodb://localhost:27017`
+- **Changing ports:** Update `.env` and restart services
+- **Account limit:** Requires server restart to take effect
 
 ---
 
@@ -112,7 +131,7 @@ All configuration is done via `.env` file.
 - Docker 20.x or later
 - Docker Compose 2.x or later
 
-### Step-by-Step Instructions
+### Step-by-Step
 
 **Step 1: Clone the repository**
 
@@ -121,15 +140,19 @@ git clone <repository-url>
 cd whatsapp-monitoring-platform
 ```
 
-**Step 2: Create the environment file**
+**Step 2: Create environment file**
 
 ```bash
 cp .env.example .env
 ```
 
-**Step 3: (Optional) Adjust settings**
+Or copy from the visible text file:
 
-Open `.env` and modify values if needed:
+```bash
+cp .env.example.txt .env
+```
+
+**Step 3: Adjust settings (optional)**
 
 ```bash
 nano .env
@@ -137,6 +160,7 @@ nano .env
 
 Common changes:
 - `MAX_WHATSAPP_ACCOUNTS=10` — increase account limit
+- `BACKEND_PORT=9000` — change API port
 
 **Step 4: Start the system**
 
@@ -144,13 +168,13 @@ Common changes:
 docker-compose up --build -d
 ```
 
-This command will:
+This will:
 1. Build the backend Docker image
 2. Download MongoDB 7 image
-3. Create persistent volumes for sessions and database
-4. Start both containers in background
+3. Create persistent volumes
+4. Start all services
 
-**Step 5: Verify services are running**
+**Step 5: Verify services**
 
 ```bash
 docker-compose ps
@@ -178,28 +202,46 @@ Expected response:
 
 ### Access Points
 
-| Service | URL |
-|---------|-----|
-| Backend API | http://localhost:8001/api |
-| Frontend Dashboard | http://localhost:3000 (if running separately) |
+| Service | URL | Description |
+|---------|-----|-------------|
+| **Backend API** | http://localhost:8001/api | REST API endpoints |
+| **Dashboard** | http://localhost:3000 | React UI (if running) |
+| **MongoDB** | localhost:27017 | Database (internal use) |
 
-### Common Docker Commands
+### Access the Dashboard
+
+**Option A: Run frontend separately**
 
 ```bash
-# View logs (all services)
-docker-compose logs -f
+cd frontend
+yarn install
+yarn start
+```
 
-# View backend logs only
+Dashboard opens at: http://localhost:3000
+
+**Option B: Build and serve frontend**
+
+```bash
+cd frontend
+yarn build
+# Serve the build/ folder with any static server
+```
+
+### Common Commands
+
+```bash
+# View logs
 docker-compose logs -f backend
 
-# Stop services (preserves sessions)
+# Stop services (keeps data)
 docker-compose down
 
-# Stop and delete all data (⚠️ deletes sessions)
+# Stop and delete all data
 docker-compose down -v
 ```
 
-For detailed Docker instructions, see [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md).
+For more Docker details, see [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md).
 
 ---
 
@@ -209,11 +251,25 @@ For detailed Docker instructions, see [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.m
 
 - Node.js 18.x or 20.x
 - MongoDB 7.x running locally
-- Chrome/Chromium (auto-installed by Puppeteer)
+- Chrome (auto-installed by Puppeteer)
 
-### Backend Setup
+### Step-by-Step
 
-**Step 1: Start MongoDB**
+**Step 1: Create environment file**
+
+```bash
+cp .env.example .env
+```
+
+**Step 2: Update MongoDB URI for local**
+
+Edit `.env`:
+
+```env
+MONGO_URI=mongodb://localhost:27017
+```
+
+**Step 3: Start MongoDB**
 
 ```bash
 # Ubuntu/Debian
@@ -223,38 +279,15 @@ sudo systemctl start mongodb
 brew services start mongodb-community
 ```
 
-**Step 2: Navigate to backend folder**
+**Step 4: Install backend dependencies**
 
 ```bash
 cd backend
-```
-
-**Step 3: Install dependencies**
-
-```bash
 yarn install
-```
-
-**Step 4: Install Chrome for Puppeteer**
-
-```bash
 npx puppeteer browsers install chrome
 ```
 
-**Step 5: Create environment file**
-
-```bash
-cat > .env << 'EOF'
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=whatsapp_monitor
-PORT=8001
-CORS_ORIGINS=*
-MAX_WHATSAPP_ACCOUNTS=5
-NODE_ENV=production
-EOF
-```
-
-**Step 6: Start the backend**
+**Step 5: Start the backend**
 
 ```bash
 node server.js
@@ -263,38 +296,30 @@ node server.js
 Expected output:
 
 ```
-[Server] Database connected
-[Server] Found 0 existing accounts
+[DB] Connecting to MongoDB: mongodb://localhost:27017/whatsapp_monitor
+[DB] Connected to MongoDB
 [Server] WhatsApp Monitoring API running on port 8001
 ```
 
-### Frontend Setup (Optional)
-
-**Step 1: Navigate to frontend folder**
+**Step 6: Install frontend dependencies**
 
 ```bash
 cd frontend
-```
-
-**Step 2: Install dependencies**
-
-```bash
 yarn install
 ```
 
-**Step 3: Create environment file**
-
-```bash
-echo "REACT_APP_BACKEND_URL=http://localhost:8001" > .env
-```
-
-**Step 4: Start the frontend**
+**Step 7: Start the frontend**
 
 ```bash
 yarn start
 ```
 
-Dashboard opens at: http://localhost:3000
+### Access Points (Local)
+
+| Service | URL |
+|---------|-----|
+| **Backend API** | http://localhost:8001/api |
+| **Dashboard** | http://localhost:3000 |
 
 ---
 
@@ -304,70 +329,32 @@ Dashboard opens at: http://localhost:3000
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/accounts` | Create new WhatsApp account |
+| `POST` | `/api/accounts` | Create new account |
 | `GET` | `/api/accounts` | List all accounts |
-| `GET` | `/api/accounts/{id}` | Get account details (includes QR code) |
-| `GET` | `/api/accounts/{id}/qr` | Get current QR code only |
+| `GET` | `/api/accounts/{id}` | Get account details |
+| `GET` | `/api/accounts/{id}/qr` | Get QR code only |
 | `PUT` | `/api/accounts/{id}/webhook` | Update webhook URL |
-| `DELETE` | `/api/accounts/{id}` | Delete account and session |
+| `DELETE` | `/api/accounts/{id}` | Delete account |
 
 ### Monitoring
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/accounts/{id}/snapshot` | Capture WhatsApp Web screenshot |
+| `GET` | `/api/accounts/{id}/snapshot` | Capture screenshot |
 
 ### Messaging
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/accounts/{id}/messages/send` | Send text or media message |
-
-### Quick Examples
-
-**Create an account:**
-
-```bash
-curl -X POST http://localhost:8001/api/accounts \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Support Account", "webhook_url": "https://webhook.site/your-id"}'
-```
-
-**Get account details (includes QR code):**
-
-```bash
-curl http://localhost:8001/api/accounts/{ACCOUNT_ID}
-```
-
-**Capture snapshot:**
-
-```bash
-curl http://localhost:8001/api/accounts/{ACCOUNT_ID}/snapshot
-```
-
-**Send text message:**
-
-```bash
-curl -X POST http://localhost:8001/api/accounts/{ACCOUNT_ID}/messages/send \
-  -H "Content-Type: application/json" \
-  -d '{"to": "1234567890", "message": "Hello from API"}'
-```
-
-**Send media message:**
-
-```bash
-curl -X POST http://localhost:8001/api/accounts/{ACCOUNT_ID}/messages/send \
-  -H "Content-Type: application/json" \
-  -d '{"to": "1234567890", "media_url": "https://example.com/image.jpg", "caption": "Check this out"}'
-```
+| `POST` | `/api/accounts/{id}/messages/send` | Send message |
 
 ---
 
 ## 8. Webhook Overview
 
-### How Webhooks Work
+### How It Works
 
-When you set a `webhook_url` for an account, incoming WhatsApp messages are automatically forwarded to your endpoint via HTTP POST.
+When you set a `webhook_url` for an account, incoming WhatsApp messages are automatically forwarded via HTTP POST.
 
 ### Unified Payload Format
 
@@ -378,132 +365,130 @@ Both text and media messages use the same structure:
   "event": "message",
   "direction": "inbound",
   "account_id": "uuid",
-  "message_id": "whatsapp_message_id",
-  "timestamp": 1706400000,
+  "message_id": "whatsapp_id",
   "from": "1234567890@c.us",
   "to": "0987654321@c.us",
-  "from_me": false,
-  "is_group": false,
-  "type": "text",
-  "text": "Message text or caption",
-  "media": null
+  "body": "Message text or caption",
+  "type": "chat",
+  "timestamp": 1706400000,
+  "has_media": false
 }
 ```
 
-### Media Messages
+### Key Fields
 
-For media messages, the `media` field contains:
+| Field | Description |
+|-------|-------------|
+| `event` | Always `message` |
+| `direction` | Always `inbound` for received messages |
+| `account_id` | Your WhatsApp account UUID |
+| `from` | Sender phone number |
+| `to` | Recipient (your account) |
+| `body` | Message text or media caption |
+| `type` | Message type (chat, image, document) |
+| `timestamp` | Unix timestamp |
+| `has_media` | Boolean indicating media attachment |
 
-```json
-{
-  "media": {
-    "mimetype": "image/jpeg",
-    "filename": "photo.jpg",
-    "size": 245680,
-    "media_url": "https://storage.com/file.jpg",
-    "duration": null
-  }
-}
-```
+### Important Notes
 
-### Key Points
-
-- **Caption in text field** — Media captions are stored in the `text` field
-- **Unified format** — One payload structure for all message types
-- **No restart required** — Updating webhook URL does NOT restart the WhatsApp session
-- **Fire-and-forget** — 5-second timeout, no automatic retries
+- **Webhook update does NOT restart session** — Safe to change anytime
+- **Timeout configurable** — Set `WEBHOOK_TIMEOUT` in `.env`
+- **Fire-and-forget** — No automatic retries on failure
 
 ### Testing Webhooks
 
-1. Go to [webhook.site](https://webhook.site) and get a free webhook URL
-2. Use that URL when creating an account
-3. Send a message to your WhatsApp account
-4. View the payload in webhook.site inspector
+1. Go to [webhook.site](https://webhook.site)
+2. Copy your unique webhook URL
+3. Use it when creating an account
+4. Send a message to your WhatsApp
+5. View payload in webhook.site
 
 ---
 
 ## 9. Human QA Checklist
 
-Follow these steps to verify the system works end-to-end.
+Follow these steps to verify the system end-to-end.
 
-### Step 1: Create an Account
+### Step 1: Create Account
 
 ```bash
 curl -X POST http://localhost:8001/api/accounts \
   -H "Content-Type: application/json" \
-  -d '{"name": "Test Account", "webhook_url": "https://webhook.site/YOUR-ID"}'
+  -d '{"name":"Test Account","webhook_url":"https://webhook.site/YOUR-ID"}'
 ```
 
-Save the returned `id` value.
+Save the returned `id`.
 
-### Step 2: Get the QR Code
+### Step 2: Get QR Code
 
-Wait 5-10 seconds for the WhatsApp client to initialize, then:
+Wait 5-10 seconds, then:
 
 ```bash
-curl http://localhost:8001/api/accounts/{ACCOUNT_ID}
+curl http://localhost:8001/api/accounts/{ID}
 ```
 
-The response contains `qr_code` field with a base64-encoded PNG image.
+Response contains `qr_code` (base64 PNG).
 
-### Step 3: Scan QR with Your Phone
+### Step 3: Scan QR with Phone
 
 1. Open WhatsApp on your phone
 2. Go to **Settings → Linked Devices**
 3. Tap **Link a Device**
 4. Scan the QR code
 
-### Step 4: Wait for READY Status
+### Step 4: Wait for READY
 
-Poll the account status:
+Poll status:
 
 ```bash
-curl http://localhost:8001/api/accounts/{ACCOUNT_ID}
+curl http://localhost:8001/api/accounts/{ID}
 ```
 
-Wait until `status` changes: `QR` → `AUTH` → `READY` (takes 10-30 seconds)
+Status progression: `INIT` → `QR` → `AUTH` → `READY`
 
-### Step 5: Test Snapshot
+### Step 5: Capture Snapshot
 
 ```bash
-curl http://localhost:8001/api/accounts/{ACCOUNT_ID}/snapshot -o snapshot.json
+curl http://localhost:8001/api/accounts/{ID}/snapshot -o snapshot.json
 ```
 
-Extract the image:
+Extract image:
 
 ```bash
-cat snapshot.json | python3 -c "import sys, json, base64; s=json.load(sys.stdin)['snapshot'].split(',')[1]; open('whatsapp.png','wb').write(base64.b64decode(s))"
+cat snapshot.json | python3 -c "import sys,json,base64;s=json.load(sys.stdin)['snapshot'].split(',')[1];open('whatsapp.png','wb').write(base64.b64decode(s))"
 ```
 
-Open `whatsapp.png` — you should see the real WhatsApp Web interface.
-
-### Step 6: Test Webhook (Receive Message)
-
-From your phone, send a message to any contact.
-
-Check webhook.site — you should see the message payload within 5 seconds.
-
-### Step 7: Test Send Message
+### Step 6: Send Text Message
 
 ```bash
-curl -X POST http://localhost:8001/api/accounts/{ACCOUNT_ID}/messages/send \
+curl -X POST http://localhost:8001/api/accounts/{ID}/messages/send \
   -H "Content-Type: application/json" \
-  -d '{"to": "YOUR_PHONE_NUMBER", "message": "Test from API"}'
+  -d '{"to":"PHONE_NUMBER","message":"Hello from API"}'
 ```
 
-The message should appear on your phone within 10 seconds.
-
-### Step 8: Test Session Persistence
+### Step 7: Send Media Message
 
 ```bash
-# Restart the backend
-docker-compose restart backend
-
-# Wait 20 seconds, then check status
-curl http://localhost:8001/api/accounts/{ACCOUNT_ID}
+curl -X POST http://localhost:8001/api/accounts/{ID}/messages/send \
+  -H "Content-Type: application/json" \
+  -d '{"to":"PHONE_NUMBER","media_url":"https://example.com/image.jpg","caption":"Check this"}'
 ```
 
-Account should still be `READY` without requiring a QR re-scan.
+### Step 8: Test Webhook
+
+Send a message TO your WhatsApp from another phone.
+
+Check webhook.site for the payload.
+
+### Step 9: Test Session Persistence
+
+```bash
+docker-compose restart backend
+# Wait 20 seconds
+curl http://localhost:8001/api/accounts/{ID}
+```
+
+Account should still be `READY`.
 
 ✅ **All tests passed** — System is fully functional.
 
@@ -511,39 +496,28 @@ Account should still be `READY` without requiring a QR re-scan.
 
 ## 10. Troubleshooting
 
-### Account Stuck in QR State
+### QR Stuck State
 
-**Problem:** Account status doesn't change from `QR` after scanning.
+**Problem:** Account status stays at `QR` after scanning.
 
-**Solution:**
-1. Check backend logs: `docker-compose logs backend`
-2. Verify Chrome is running: `docker-compose exec backend ps aux | grep chrome`
-3. If no Chrome processes, rebuild: `docker-compose up --build -d`
-
----
-
-### Snapshot Returns "Account not ready"
-
-**Problem:** Snapshot API returns `ACCOUNT_NOT_READY` error.
-
-**Solution:**
-- Account must be in `READY` state before taking snapshots
-- Check status: `curl http://localhost:8001/api/accounts/{ACCOUNT_ID}`
-- If status is `QR` or `INIT`, complete the QR scan first
+**Solutions:**
+1. Check logs: `docker-compose logs backend`
+2. Verify Chrome: `docker-compose exec backend ps aux | grep chrome`
+3. Delete and recreate account
 
 ---
 
-### Chrome Not Starting
+### Chrome Not Launching
 
-**Problem:** Backend logs show "Chrome not found" or Puppeteer errors.
+**Problem:** Puppeteer errors in logs.
 
-**Docker Solution:**
+**Docker:**
 ```bash
 docker-compose down
 docker-compose up --build -d
 ```
 
-**Local Solution:**
+**Local:**
 ```bash
 cd backend
 npx puppeteer browsers install chrome
@@ -551,9 +525,20 @@ npx puppeteer browsers install chrome
 
 ---
 
-### Port Already in Use
+### Snapshot Returns ACCOUNT_NOT_READY
 
-**Problem:** `docker-compose up` fails with "port already allocated".
+**Problem:** Snapshot API returns error.
+
+**Solution:**
+- Account must be in `READY` state
+- Complete QR scan first
+- Check: `curl http://localhost:8001/api/accounts/{ID}`
+
+---
+
+### Port Conflict
+
+**Problem:** Service fails to start due to port in use.
 
 **Solution:**
 
@@ -562,78 +547,59 @@ npx puppeteer browsers install chrome
    sudo lsof -i :8001
    ```
 
-2. Either stop that process, or change the port in `docker-compose.yml`:
-   ```yaml
-   services:
-     backend:
-       ports:
-         - "9000:8001"  # Change external port to 9000
+2. Change port in `.env`:
+   ```env
+   BACKEND_PORT=9000
    ```
 
-3. Access API at: http://localhost:9000/api
+3. Restart:
+   ```bash
+   docker-compose up -d
+   ```
+
+---
+
+### Docker Volume Permission Issues
+
+**Problem:** Session files not persisting.
+
+**Solution:**
+
+1. Check volume:
+   ```bash
+   docker volume ls | grep whatsapp-sessions
+   ```
+
+2. Inspect permissions:
+   ```bash
+   docker-compose exec backend ls -la /app/backend/whatsapp-sessions/
+   ```
+
+3. If needed, recreate volume:
+   ```bash
+   docker-compose down -v
+   docker-compose up -d
+   ```
 
 ---
 
 ### Session Lost After Restart
 
-**Problem:** Account requires QR re-scan after restart.
+**Problem:** Account requires QR re-scan.
 
-**Cause:** Docker volume was deleted.
-
-**Solution:**
-1. Check volume exists: `docker volume ls | grep whatsapp-sessions`
-2. Never use `docker-compose down -v` in production (this deletes volumes)
-3. Verify volume mount in `docker-compose.yml`:
-   ```yaml
-   volumes:
-     - whatsapp-sessions:/app/backend/whatsapp-sessions
-   ```
-
----
-
-### Webhook Not Received
-
-**Problem:** Messages sent to WhatsApp but webhook not triggered.
+**Cause:** Volume deleted or not mounted.
 
 **Solution:**
-1. Verify webhook URL is accessible from the server
-2. Check webhook.site for request logs
-3. Verify `webhook_url` is set: `curl http://localhost:8001/api/accounts/{ACCOUNT_ID}`
-4. Send message from a different contact (not yourself)
+- Never use `docker-compose down -v` in production
+- Verify volume mount in `docker-compose.yml`
 
 ---
 
 ## Additional Resources
 
-- **Docker Deployment Guide:** [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
-- **whatsapp-web.js Documentation:** https://github.com/pedroslopez/whatsapp-web.js
-- **Puppeteer Documentation:** https://pptr.dev
-
----
-
-## Important Notes
-
-### Production Considerations
-
-- **Add authentication** — This system has NO built-in API authentication
-- **Limit CORS** — Change `CORS_ORIGINS=*` to your specific domain
-- **Use reverse proxy** — Put Nginx/Caddy in front for HTTPS
-- **Monitor resources** — Each account uses ~200MB RAM
-- **Backup sessions** — Regularly backup the `whatsapp-sessions` volume
-
-### WhatsApp Limitations
-
-- **QR expires** — QR codes expire every 60 seconds (new QR auto-generated)
-- **Session revocation** — WhatsApp may revoke sessions if suspicious activity detected
-- **Rate limits** — WhatsApp has undocumented rate limits on messages
-- **Phone required** — Physical phone must stay online for WhatsApp Web to work
-
-### System Limitations
-
-- **Single server** — Cannot horizontally scale (Puppeteer sessions tied to process)
-- **One Chrome per account** — Each account runs a separate Chrome instance
-- **Manual QR** — Initial QR scan requires human intervention
-- **Monitoring only** — This is a monitoring tool, not a chatbot framework
+- [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) — Docker-specific guide
+- [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) — WhatsApp client library
+- [Puppeteer](https://pptr.dev) — Browser automation
 
 ---
 
