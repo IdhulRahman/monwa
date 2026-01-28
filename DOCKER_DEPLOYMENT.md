@@ -229,7 +229,7 @@ docker-compose restart backend
 
 ```bash
 docker-compose exec mongodb mongodump --out=/dump --db=whatsapp_monitor
-docker cp whatsapp-monitor-db:/dump ./mongodb-backup
+docker cp monwa-db:/dump ./mongodb-backup
 ```
 
 ---
