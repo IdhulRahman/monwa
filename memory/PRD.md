@@ -1,124 +1,124 @@
-# WhatsApp Monitoring Platform - Product Requirements Document
+# WhatsApp Monitoring Platform - PRD
 
 ## Original Problem Statement
 
-Build a modern, clean, and professional web UI for a production-grade WhatsApp monitoring platform. Requirements:
-
+Build a modern, production-grade WhatsApp monitoring platform with:
 - Real WhatsApp client using `whatsapp-web.js`
 - Multi-account support with persistent sessions
 - Snapshot-based UI monitoring (on-demand screenshots)
 - Scalable, efficient architecture
-- Platform-safe (Linux/Windows compatible)
-- Monitoring and observability focus (not a chatbot framework)
+- Single global configuration file
 
-## Core Requirements
+Inspired by WAHA but designed for multi-account monitoring with a lighter footprint.
 
-1. **Multi-Account Management** - Support multiple WhatsApp accounts with ENV-configurable limit
-2. **Session Persistence** - LocalAuth for session storage across restarts
-3. **QR Authentication** - Display QR codes for phone linking
-4. **Snapshot Capture** - On-demand screenshots of WhatsApp Web UI
-5. **Message Webhook** - Forward incoming messages to user-specified URL
-6. **Send Message API** - Send text and media messages programmatically
-7. **Docker Deployment** - One-command deployment with docker-compose
+---
+
+## What's Been Implemented
+
+### Core Features ✅
+- [x] Multi-account WhatsApp management
+- [x] QR code authentication
+- [x] Session persistence (LocalAuth)
+- [x] On-demand screenshot capture
+- [x] Unified webhook system
+- [x] Send message API (text + media)
+- [x] Docker deployment
+
+### Configuration ✅ (Dec 2025)
+- [x] Single global `.env` file
+- [x] Configurable ports (BACKEND_PORT, FRONTEND_PORT, MONGO_PORT)
+- [x] Configurable limits (MAX_WHATSAPP_ACCOUNTS)
+- [x] Configurable delays (SNAPSHOT_DELAY_MIN/MAX)
+- [x] Configurable timeouts (WEBHOOK_TIMEOUT)
+
+### Documentation ✅ (Dec 2025)
+- [x] README.md with 10-section structure
+- [x] DOCKER_DEPLOYMENT.md
+- [x] RUNBOOK.md for operators
+- [x] .env.example and .env.example.txt
+
+---
 
 ## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| Backend | Node.js + Express.js |
-| Frontend | React + Tailwind CSS |
-| WhatsApp Client | whatsapp-web.js + Puppeteer |
+| Backend | Node.js + Express |
+| Frontend | React + Tailwind |
+| WhatsApp | whatsapp-web.js + Puppeteer |
 | Database | MongoDB |
-| Deployment | Docker + Docker Compose |
+| Config | Single .env file |
 
-## What's Been Implemented
+---
 
-### Phase 1: Core Infrastructure ✅
-- [x] Node.js/Express backend setup
-- [x] MongoDB integration for account metadata
-- [x] whatsapp-web.js client management
-- [x] Session persistence with LocalAuth
+## Environment Variables
 
-### Phase 2: API Development ✅
-- [x] Account CRUD operations
-- [x] QR code generation and retrieval
-- [x] Snapshot capture endpoint
-- [x] Send message API (text + media)
-- [x] Webhook management (update without restart)
+| Variable | Default | Description |
+|----------|---------|-------------|
+| BACKEND_PORT | 8001 | API server port |
+| FRONTEND_PORT | 3000 | Dashboard port |
+| MONGO_PORT | 27017 | Database port |
+| MONGO_URI | mongodb://mongodb:27017 | Connection string |
+| DB_NAME | whatsapp_monitor | Database name |
+| MAX_WHATSAPP_ACCOUNTS | 5 | Account limit |
+| SNAPSHOT_DELAY_MIN | 2000 | Min delay (ms) |
+| SNAPSHOT_DELAY_MAX | 4000 | Max delay (ms) |
+| WEBHOOK_TIMEOUT | 5000 | HTTP timeout (ms) |
+| CORS_ORIGINS | * | Allowed origins |
+| NODE_ENV | production | Environment |
 
-### Phase 3: Frontend ✅
-- [x] React dashboard
-- [x] Account management UI
-- [x] QR code display
-
-### Phase 4: Deployment ✅
-- [x] Dockerfile
-- [x] docker-compose.yml with volumes
-- [x] Environment configuration
-
-### Phase 5: Documentation ✅ (Completed Dec 2025)
-- [x] README.md - Primary documentation
-- [x] DOCKER_DEPLOYMENT.md - Docker-specific guide
-- [x] RUNBOOK.md - Operations quick reference
-- [x] .env.example - Environment template
+---
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api` | Health check |
-| POST | `/api/accounts` | Create account |
-| GET | `/api/accounts` | List accounts |
-| GET | `/api/accounts/{id}` | Get account details |
-| GET | `/api/accounts/{id}/qr` | Get QR code |
-| PUT | `/api/accounts/{id}/webhook` | Update webhook |
-| GET | `/api/accounts/{id}/snapshot` | Capture screenshot |
-| POST | `/api/accounts/{id}/messages/send` | Send message |
-| DELETE | `/api/accounts/{id}` | Delete account |
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | /api | Health check |
+| POST | /api/accounts | Create account |
+| GET | /api/accounts | List accounts |
+| GET | /api/accounts/{id} | Get account |
+| GET | /api/accounts/{id}/qr | Get QR code |
+| PUT | /api/accounts/{id}/webhook | Update webhook |
+| GET | /api/accounts/{id}/snapshot | Take screenshot |
+| POST | /api/accounts/{id}/messages/send | Send message |
+| DELETE | /api/accounts/{id} | Delete account |
+
+---
 
 ## Current Status
 
 **Phase:** Human QA / Production Ready
 
-**Blocker:** Manual QR code scan required to verify full end-to-end flow
+**Blocker:** Manual QR scan required (expected behavior)
 
-## Backlog / Future Enhancements
+---
 
-### P0 (Critical)
-- None - Core features complete
+## Backlog
 
 ### P1 (High Priority)
 - [ ] API authentication layer
 - [ ] Rate limiting
-- [ ] HTTPS/TLS support
 
 ### P2 (Medium Priority)
 - [ ] Message history storage
 - [ ] Webhook retry logic
-- [ ] Admin dashboard metrics
 
 ### P3 (Low Priority)
 - [ ] Group message support
 - [ ] Scheduled messages
-- [ ] Message templates
 
-## Key Files Reference
+---
+
+## Key Files
 
 | File | Purpose |
 |------|---------|
-| `/app/backend/server.js` | Backend entry point |
-| `/app/backend/managers/ClientManager.js` | WhatsApp client management |
-| `/app/backend/routes/accounts.js` | API route handlers |
-| `/app/docker-compose.yml` | Docker service definitions |
-| `/app/README.md` | Primary documentation |
-| `/app/RUNBOOK.md` | Operations guide |
-
-## Notes
-
-- Each WhatsApp account uses ~200MB RAM
-- QR codes expire every 60 seconds (auto-refreshed)
-- Changing MAX_WHATSAPP_ACCOUNTS requires server restart
-- Sessions persist across restarts via Docker volume
+| /app/.env | Global configuration |
+| /app/README.md | Main documentation |
+| /app/DOCKER_DEPLOYMENT.md | Docker guide |
+| /app/RUNBOOK.md | Operations guide |
+| /app/backend/server.js | Backend entry |
+| /app/backend/managers/ClientManager.js | WhatsApp clients |
 
 ---
 
