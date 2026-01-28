@@ -42,6 +42,7 @@ All environment variables are passed to containers automatically.
 
 | Service | Container Name | Port | Image |
 |---------|----------------|------|-------|
+| Frontend | whatsapp-monitor-frontend | `${FRONTEND_PORT}` | Built locally |
 | Backend | whatsapp-monitor-backend | `${BACKEND_PORT}` | Built locally |
 | MongoDB | whatsapp-monitor-db | `${MONGO_PORT}` | mongo:7 |
 
